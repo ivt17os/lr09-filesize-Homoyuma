@@ -1,4 +1,4 @@
-// оюбкнб юкейяюмдп
+//	яреоюмнб юияхщм
 
 #include <windows.h>
 #include <stdio.h>
