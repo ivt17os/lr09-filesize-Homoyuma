@@ -8,8 +8,6 @@
 static int count;
 static long long size;
  
-
-
 void dfs() {
     // начинает перебор файлов и папок в текущей папке
     // 1) папки . и .. пропускаем
@@ -23,17 +21,26 @@ void dfs() {
     hFind = FindFirstFile(L"*", &res);   // найти первый файл
  
     do {
-        count++; // некоторые файлы не считаются??
-        _tprintf(TEXT("file #%d is <%s>\n"), count, res.cFileName);
+		if(wcscmp(res.cFileName, L".") == 0 ||
+			wcscmp(res.cFileName, L"..") == 0)
+			continue;
+			_tprintf(TEXT("file #%d is <%s>\n"), count, res.cFileName);
  
-        // if (...) { // если это подпапка
+        if ((res.dwFileAttributes&16) != 0){
+		// если это подпапка
         // 	здесь будет обход в глубину
-        // }
-        // else {// это файл
-        // size+=res....
-        // }
+			SetCurrentDirectory(res.cFileName);
+			dfs();
+			SetCurrentDirectory(L"..");
+        }
+        else 
+		{// это файл
+		size+=res.nFileSizeLow;
+		count++;
+        }
     } while (FindNextFile(hFind, &res) != 0);
     FindClose(hFind);
+    SetCurrentDirectory(L"..");
 }
  
 int main(int argc, wchar_t* argv[]) {
@@ -45,7 +52,6 @@ int main(int argc, wchar_t* argv[]) {
     size = 0;                   	// обнулить суммарный размер файлов
     dfs();                      	// запустить обход в глубину из текущей папки
  
-    printf("File count = %d, size = %lld\n", count, size);
+    printf("File count = %d, size = %lld bait \n", count, size);
     return 0;
 }
- 
